@@ -87,41 +87,12 @@ const testSupabaseConnection = async () => {
     console.log('Key type check:', supabaseAnonKey.includes('service_role') ? '⚠️ SERVICE ROLE KEY DETECTED' : '✅ Anonymous key');
     
     // Test basic connectivity with timeout
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Connection timeout')), 5000)
-    );
-    
-    const sessionPromise = supabase.auth.getSession();
-    
-    const { data, error } = await Promise.race([sessionPromise, timeoutPromise]);
+    const { data, error } = await supabase.auth.getSession();
     
     if (error) {
       console.error('❌ Supabase connection error:', error);
     } else {
       console.log('✅ Supabase connected successfully');
-      
-      // Test database read permissions with timeout
-      try {
-        console.log('🔄 Testing database read permissions...');
-        const dbTimeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Database timeout')), 3000)
-        );
-        
-        const dbTestPromise = supabase
-          .from('profiles')
-          .select('count')
-          .limit(1);
-        
-        const testRead = await Promise.race([dbTestPromise, dbTimeoutPromise]);
-        
-        if (testRead.error) {
-          console.error('❌ Database access error:', testRead.error);
-        } else {
-          console.log('✅ Database read access working');
-        }
-      } catch (dbError) {
-        console.error('❌ Database test failed:', dbError);
-      }
     }
   } catch (networkError) {
     console.error('❌ Network error connecting to Supabase:', networkError);
