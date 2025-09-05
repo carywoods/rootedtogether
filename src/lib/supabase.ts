@@ -9,15 +9,16 @@ console.log('Supabase Environment Check:', {
   nodeEnv: import.meta.env.MODE
 });
 
-let supabase;
+let supabase: any;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase environment variables:', {
     url: supabaseUrl ? 'present' : 'missing',
     key: supabaseAnonKey ? 'present' : 'missing'
   });
-  // Create a dummy client that will show clear errors
+  // Create a dummy client to prevent crashes
   supabase = createClient('https://dummy.supabase.co', 'dummy-key');
+} else {
   supabase = createClient(supabaseUrl, supabaseAnonKey);
 }
 
