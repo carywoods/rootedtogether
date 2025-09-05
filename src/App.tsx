@@ -14,9 +14,11 @@ function AppContent() {
   const { user, profile, loading } = useAuthContext();
 
   useEffect(() => {
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator && import.meta.env.PROD) {
-      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    // Register service worker for PWA (skip in StackBlitz environment)
+    if ('serviceWorker' in navigator && import.meta.env.PROD && !window.location.hostname.includes('stackblitz')) {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        console.warn('Service worker registration failed:', error);
+      });
     }
   }, []);
 

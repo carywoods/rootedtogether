@@ -3,19 +3,30 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Validate URL format
+const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // Comprehensive environment check
 console.log('=== SUPABASE CONFIGURATION DEBUG ===');
 console.log('VITE_SUPABASE_URL:', supabaseUrl || 'MISSING');
+console.log('URL is valid:', supabaseUrl ? isValidUrl(supabaseUrl) : false);
 console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING');
 console.log('Environment:', import.meta.env.MODE);
 console.log('All env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
 console.log('Current URL:', window.location.href);
 console.log('Is production build:', import.meta.env.PROD);
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ CRITICAL: Missing Supabase configuration!');
+if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
+  console.error('❌ CRITICAL: Invalid Supabase configuration!');
   console.error('Please ensure these environment variables are set:');
-  console.error('- VITE_SUPABASE_URL: Your Supabase project URL');
+  console.error('- VITE_SUPABASE_URL: Your Supabase project URL (must be a valid URL)');
   console.error('- VITE_SUPABASE_ANON_KEY: Your Supabase anonymous key');
   
   // Show a user-friendly error in production
@@ -34,7 +45,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Create Supabase client with enhanced error handling
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseUrl && isValidUrl(supabaseUrl) ? supabaseUrl : 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key',
   {
     auth: {
@@ -51,7 +62,7 @@ export const supabase = createClient(
 
 // Enhanced connection testing
 const testSupabaseConnection = async () => {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
     console.warn('⚠️ Skipping connection test - missing configuration');
     return;
   }
