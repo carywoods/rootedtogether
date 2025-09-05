@@ -51,30 +51,6 @@ export const supabase = createClient(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: false,
-    },
-    global: {
-      headers: {
-        'X-Client-Info': 'rooted-together-app',
-      },
-      fetch: (url, options = {}) => {
-        // Add timeout and better error handling for fetch requests
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        return fetch(url, {
-          ...options,
-          signal: controller.signal,
-        }).finally(() => {
-          clearTimeout(timeoutId);
-        });
-      },
-    },
-  }
-);
-
-// Enhanced connection testing
-
 export type Profile = {
   id: string;
   username: string;
