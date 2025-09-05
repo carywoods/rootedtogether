@@ -51,6 +51,9 @@ export const supabase = createClient(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
+    }
+  }
+)
 export type Profile = {
   id: string;
   username: string;
