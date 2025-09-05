@@ -74,33 +74,6 @@ export const supabase = createClient(
 );
 
 // Enhanced connection testing
-const testSupabaseConnection = async () => {
-  if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
-    console.warn('⚠️ Skipping connection test - missing configuration');
-    return;
-  }
-
-  try {
-    console.log('🔄 Testing Supabase connection...');
-    console.log('Testing with URL:', supabaseUrl);
-    console.log('Testing with key prefix:', supabaseAnonKey.substring(0, 20) + '...');
-    console.log('Key type check:', supabaseAnonKey.includes('service_role') ? '⚠️ SERVICE ROLE KEY DETECTED' : '✅ Anonymous key');
-    
-    // Test basic connectivity with timeout
-    const { data, error } = await supabase.auth.getSession();
-    
-    if (error) {
-      console.error('❌ Supabase connection error:', error);
-    } else {
-      console.log('✅ Supabase connected successfully');
-    }
-  } catch (networkError) {
-    console.error('❌ Network error connecting to Supabase:', networkError);
-  }
-};
-
-// Test connection on module load
-testSupabaseConnection();
 
 export type Profile = {
   id: string;
