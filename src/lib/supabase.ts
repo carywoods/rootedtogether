@@ -43,6 +43,8 @@ const testSupabaseConnection = async () => {
 
   try {
     console.log('🔄 Testing Supabase connection...');
+    console.log('Testing with URL:', supabaseUrl);
+    console.log('Testing with key prefix:', supabaseAnonKey.substring(0, 20) + '...');
     
     // Test basic connectivity
     const { data, error } = await supabase.auth.getSession();
@@ -66,7 +68,10 @@ const testSupabaseConnection = async () => {
     console.error('3. CORS configuration problems');
     console.error('4. Supabase project is paused/inactive');
   }
-}
+};
+
+// Test connection on module load
+testSupabaseConnection();
 
 export type Profile = {
   id: string;

@@ -39,6 +39,10 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
       
       if (error.message?.includes('fetch')) {
         errorMessage = 'Connection failed. Please check your internet connection and try again.';
+      } else if (error.message?.includes('NetworkError')) {
+        errorMessage = 'Network error. Please verify your Supabase configuration and try again.';
+      } else if (error.message?.includes('Failed to fetch')) {
+        errorMessage = 'Unable to connect to authentication service. Please check your Supabase URL and keys.';
       } else if (error.message?.includes('Invalid login credentials')) {
         errorMessage = 'Invalid email or password. Please check your credentials.';
       } else if (error.message?.includes('User already registered')) {
