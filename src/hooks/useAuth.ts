@@ -68,6 +68,7 @@ export function useAuth() {
       console.log('Supabase URL being used:', import.meta.env.VITE_SUPABASE_URL);
       console.log('Environment mode:', import.meta.env.MODE);
       console.log('Is production:', import.meta.env.PROD);
+      console.log('Key type:', import.meta.env.VITE_SUPABASE_ANON_KEY?.includes('service_role') ? '⚠️ SERVICE ROLE' : '✅ ANON KEY');
       
       // Check if Supabase is properly configured
       if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
@@ -85,11 +86,15 @@ export function useAuth() {
           message: error.message,
           status: error.status,
           statusText: error.statusText,
+          hint: error.hint,
+          details: error.details,
         });
         return { data, error };
       }
       
       console.log('✅ Sign up successful:', data);
+      console.log('User created:', data.user ? '✅ Yes' : '❌ No');
+      console.log('Session created:', data.session ? '✅ Yes' : '❌ No');
       return { data, error };
     } catch (networkError) {
       console.error('❌ Network error during sign up:', networkError);

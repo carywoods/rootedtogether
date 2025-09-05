@@ -60,6 +60,7 @@ const testSupabaseConnection = async () => {
     console.log('🔄 Testing Supabase connection...');
     console.log('Testing with URL:', supabaseUrl);
     console.log('Testing with key prefix:', supabaseAnonKey.substring(0, 20) + '...');
+    console.log('Key type check:', supabaseAnonKey.includes('service_role') ? '⚠️ SERVICE ROLE KEY DETECTED' : '✅ Anonymous key');
     
     // Test basic connectivity
     const { data, error } = await supabase.auth.getSession();
@@ -74,6 +75,23 @@ const testSupabaseConnection = async () => {
     } else {
       console.log('✅ Supabase connected successfully');
       console.log('Session data:', data.session ? 'User logged in' : 'No active session');
+    }
+    
+    // Test database write permissions
+    try {
+      console.log('🔄 Testing database write permissions...');
+      const testWrite = await supabase
+        .from('profiles')
+        .select('count')
+        .limit(1);
+      
+      if (testWrite.error) {
+        console.error('❌ Database access error:', testWrite.error);
+      } else {
+        console.log('✅ Database read access working');
+      }
+    } catch (dbError) {
+      console.error('❌ Database test failed:', dbError);
     }
   } catch (networkError) {
     console.error('❌ Network error connecting to Supabase:', networkError);
