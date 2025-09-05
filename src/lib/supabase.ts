@@ -3,36 +3,73 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-console.log('Supabase Environment Check:', {
-  url: supabaseUrl ? 'Set' : 'Missing',
-  key: supabaseAnonKey ? 'Set' : 'Missing',
-  urlValue: supabaseUrl,
-});
+// Comprehensive environment check
+console.log('=== SUPABASE CONFIGURATION DEBUG ===');
+console.log('VITE_SUPABASE_URL:', supabaseUrl || 'MISSING');
+console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING');
+console.log('Environment:', import.meta.env.MODE);
+console.log('All env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase configuration!');
-  console.error('Required environment variables:');
-  console.error('- VITE_SUPABASE_URL:', supabaseUrl || 'MISSING');
-  console.error('- VITE_SUPABASE_ANON_KEY:', supabaseAnonKey || 'MISSING');
+  console.error('❌ CRITICAL: Missing Supabase configuration!');
+  console.error('Please ensure these environment variables are set:');
+  console.error('- VITE_SUPABASE_URL: Your Supabase project URL');
+  console.error('- VITE_SUPABASE_ANON_KEY: Your Supabase anonymous key');
 }
 
-export const supabase: SupabaseClient = createClient(
+// Create Supabase client with enhanced error handling
+export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
+  supabaseAnonKey || 'placeholder-key',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'rooted-together-app',
+      },
+    },
+  }
 );
 
-// Test the connection
-supabase.auth.getSession().then(({ data, error }) => {
-  if (error && (supabaseUrl && supabaseAnonKey)) {
-    console.error('Supabase connection error:', error);
-  } else if (supabaseUrl && supabaseAnonKey) {
-    console.log('Supabase connected successfully');
+// Enhanced connection testing
+const testSupabaseConnection = async () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('⚠️ Skipping connection test - missing configuration');
+    return;
   }
-}).catch(err => {
-  if (supabaseUrl && supabaseAnonKey) {
-    console.error('Supabase connection failed:', err);
+
+  try {
+    console.log('🔄 Testing Supabase connection...');
+    
+    // Test basic connectivity
+    const { data, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      console.error('❌ Supabase connection error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        status: error.status,
+        statusText: error.statusText,
+      });
+    } else {
+      console.log('✅ Supabase connected successfully');
+      console.log('Session data:', data.session ? 'User logged in' : 'No active session');
+    }
+  } catch (networkError) {
+    console.error('❌ Network error connecting to Supabase:', networkError);
+    console.error('This usually indicates:');
+    console.error('1. Invalid Supabase URL');
+    console.error('2. Network connectivity issues');
+    console.error('3. CORS configuration problems');
+    console.error('4. Supabase project is paused/inactive');
   }
-});
+};
+
+// Run connection test
+testSupabaseConnection();
 
 export type Profile = {
   id: string;

@@ -32,8 +32,22 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
         }
       }
     } catch (error: any) {
-      console.error('Auth form error:', error);
-      setError(error.message || 'An unexpected error occurred');
+      console.error('❌ Auth form error:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'An unexpected error occurred';
+      
+      if (error.message?.includes('fetch')) {
+        errorMessage = 'Connection failed. Please check your internet connection and try again.';
+      } else if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password. Please check your credentials.';
+      } else if (error.message?.includes('User already registered')) {
+        errorMessage = 'An account with this email already exists. Try signing in instead.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
