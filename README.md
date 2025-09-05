@@ -49,6 +49,12 @@ A modern Progressive Web App that connects gardeners of all experience levels. B
    npm run dev
    ```
 
+5. **For production, build and start the server:**
+   ```bash
+   npm run build
+   npm start
+   ```
+
 ## Deployment with Coolify
 
 1. **Create new application in Coolify**
@@ -63,11 +69,11 @@ A modern Progressive Web App that connects gardeners of all experience levels. B
 
 3. **Set build and start commands:**
    - Build command: `npm run build`
-   - Start command: `npm run preview`
-   - Port: `4173`
+   - Start command: `npm start`
+   - Port: `8080`
 
 4. **Configure health check:**
-   - Health check path: `/api/health`
+   - Health check path: `/health`
    - Enable TLS and attach your domain
 
 ## Architecture
@@ -109,6 +115,7 @@ src/
 ├── pages/              # Route components
 └── types/              # TypeScript type definitions
 
+server.js               # Express server for self-hosting
 supabase/
 └── migrations/         # Database migration files
 
@@ -126,7 +133,7 @@ Required environment variables:
 
 ## API Endpoints
 
-- `GET /api/health` - Health check endpoint for deployment monitoring
+- `GET /health` - Health check endpoint for deployment monitoring
 
 ## Contributing
 

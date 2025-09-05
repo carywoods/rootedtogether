@@ -8,12 +8,12 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "health": "node -e \"console.log('Health check: OK')\"",
-    "start": "npm run build && npm run preview"
+    "start": "node server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.5",
     "@supabase/auth-helpers-react": "^0.4.2",
+    "express": "^4.19.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.20.1",
