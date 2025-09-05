@@ -45,16 +45,29 @@ if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
 
 // Create Supabase client with enhanced error handling
 export const supabase = createClient(
-  supabaseUrl && isValidUrl(supabaseUrl) ? supabaseUrl : 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key',
+  supabaseUrl && isValidUrl(supabaseUrl) ? supabaseUrl : 'https://localhost:54321',
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
   {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
+      detectSessionInUrl: false,
     },
     global: {
       headers: {
         'X-Client-Info': 'rooted-together-app',
+      },
+      fetch: (url, options = {}) => {
+        // Add timeout and better error handling for fetch requests
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        return fetch(url, {
+          ...options,
+          signal: controller.signal,
+        }).finally(() => {
+          clearTimeout(timeoutId);
+        });
       },
     },
   }
@@ -73,44 +86,45 @@ const testSupabaseConnection = async () => {
     console.log('Testing with key prefix:', supabaseAnonKey.substring(0, 20) + '...');
     console.log('Key type check:', supabaseAnonKey.includes('service_role') ? '⚠️ SERVICE ROLE KEY DETECTED' : '✅ Anonymous key');
     
-    // Test basic connectivity
-    const { data, error } = await supabase.auth.getSession();
+    // Test basic connectivity with timeout
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Connection timeout')), 5000)
+    );
+    
+    const sessionPromise = supabase.auth.getSession();
+    
+    const { data, error } = await Promise.race([sessionPromise, timeoutPromise]);
     
     if (error) {
       console.error('❌ Supabase connection error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        status: error.status,
-        statusText: error.statusText,
-      });
     } else {
       console.log('✅ Supabase connected successfully');
-      console.log('Session data:', data.session ? 'User logged in' : 'No active session');
-    }
-    
-    // Test database write permissions
-    try {
-      console.log('🔄 Testing database write permissions...');
-      const testWrite = await supabase
-        .from('profiles')
-        .select('count')
-        .limit(1);
       
-      if (testWrite.error) {
-        console.error('❌ Database access error:', testWrite.error);
-      } else {
-        console.log('✅ Database read access working');
+      // Test database read permissions with timeout
+      try {
+        console.log('🔄 Testing database read permissions...');
+        const dbTimeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Database timeout')), 3000)
+        );
+        
+        const dbTestPromise = supabase
+          .from('profiles')
+          .select('count')
+          .limit(1);
+        
+        const testRead = await Promise.race([dbTestPromise, dbTimeoutPromise]);
+        
+        if (testRead.error) {
+          console.error('❌ Database access error:', testRead.error);
+        } else {
+          console.log('✅ Database read access working');
+        }
+      } catch (dbError) {
+        console.error('❌ Database test failed:', dbError);
       }
-    } catch (dbError) {
-      console.error('❌ Database test failed:', dbError);
     }
   } catch (networkError) {
     console.error('❌ Network error connecting to Supabase:', networkError);
-    console.error('This usually indicates:');
-    console.error('1. Invalid Supabase URL');
-    console.error('2. Network connectivity issues');
-    console.error('3. CORS configuration problems');
-    console.error('4. Supabase project is paused/inactive');
   }
 };
 

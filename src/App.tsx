@@ -14,11 +14,20 @@ function AppContent() {
   const { user, profile, loading } = useAuthContext();
 
   useEffect(() => {
-    // Register service worker for PWA (skip in StackBlitz environment)
-    if ('serviceWorker' in navigator && import.meta.env.PROD && !window.location.href.includes('stackblitz.io')) {
-      navigator.serviceWorker.register('/sw.js').catch((error) => {
-        console.warn('Service worker registration failed:', error);
-      });
+    // Register service worker for PWA (skip in development and StackBlitz environments)
+    const isStackBlitz = window.location.hostname.includes('stackblitz') || 
+                        window.location.href.includes('stackblitz.io') ||
+                        window.location.hostname.includes('webcontainer');
+    const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
+    
+    if ('serviceWorker' in navigator && import.meta.env.PROD && !isStackBlitz && !isDevelopment) {
+      try {
+        navigator.serviceWorker.register('/sw.js').catch((error) => {
+          console.warn('Service worker registration failed:', error);
+        });
+      } catch (error) {
+        console.warn('Service worker not supported in this environment:', error);
+      }
     }
   }, []);
 
