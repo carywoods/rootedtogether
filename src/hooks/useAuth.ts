@@ -66,6 +66,13 @@ export function useAuth() {
     try {
       console.log('🔄 Attempting sign up for:', email);
       console.log('Supabase URL being used:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('Environment mode:', import.meta.env.MODE);
+      console.log('Is production:', import.meta.env.PROD);
+      
+      // Check if Supabase is properly configured
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        throw new Error('Supabase configuration is missing. Please check your environment variables.');
+      }
       
       const { data, error } = await supabase.auth.signUp({
         email,

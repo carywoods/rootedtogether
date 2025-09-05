@@ -9,12 +9,27 @@ console.log('VITE_SUPABASE_URL:', supabaseUrl || 'MISSING');
 console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING');
 console.log('Environment:', import.meta.env.MODE);
 console.log('All env vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
+console.log('Current URL:', window.location.href);
+console.log('Is production build:', import.meta.env.PROD);
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('❌ CRITICAL: Missing Supabase configuration!');
   console.error('Please ensure these environment variables are set:');
   console.error('- VITE_SUPABASE_URL: Your Supabase project URL');
   console.error('- VITE_SUPABASE_ANON_KEY: Your Supabase anonymous key');
+  
+  // Show a user-friendly error in production
+  if (import.meta.env.PROD) {
+    const errorDiv = document.createElement('div');
+    errorDiv.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; right: 0; background: #fee2e2; border-bottom: 1px solid #fecaca; padding: 12px; z-index: 9999; font-family: Arial, sans-serif;">
+        <div style="max-width: 1200px; margin: 0 auto; color: #991b1b;">
+          <strong>⚠️ Configuration Error:</strong> Supabase environment variables are missing. Please check your deployment configuration.
+        </div>
+      </div>
+    `;
+    document.body.appendChild(errorDiv);
+  }
 }
 
 // Create Supabase client with enhanced error handling
