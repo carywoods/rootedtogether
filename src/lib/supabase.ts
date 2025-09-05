@@ -3,26 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-console.log('Supabase Environment Check:', {
-  url: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'MISSING',
-  key: supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING',
-  nodeEnv: import.meta.env.MODE
-});
-
-let supabase: any;
-
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables:', {
-    url: supabaseUrl ? 'present' : 'missing',
-    key: supabaseAnonKey ? 'present' : 'missing'
-  });
-  // Create a dummy client to prevent crashes
-  supabase = createClient('https://dummy.supabase.co', 'dummy-key');
-} else {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  throw new Error(
+    'Missing Supabase configuration. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
+  );
 }
 
-export { supabase };
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type Profile = {
   id: string;
