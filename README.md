@@ -62,10 +62,15 @@ A modern Progressive Web App that connects gardeners of all experience levels. B
    - Set as Node.js application
 
 2. **Configure environment variables in Coolify:**
+   Go to your Coolify application dashboard and add these environment variables:
    ```
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key-here
+   VITE_SUPABASE_URL=http://supabasekong-i4w0w04g0w4k0gs048k884ok.158.69.200.214.sslip.io/
+   VITE_SUPABASE_ANON_KEY=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc1NjY4MDY2MCwiZXhwIjo0OTEyMzU0MjYwLCJyb2xlIjoic2VydmljZV9yb2xlIn0.PPFg8Oq3QGCSZYY_z34gb6nlLJ5zQcC-NRe1W-b-21Q
    ```
+   
+   **Important:** Make sure to add these in the Coolify dashboard under:
+   - Application Settings → Environment Variables
+   - Or during the application setup process
 
 3. **Set build and start commands:**
    - Build command: `npm run build`
