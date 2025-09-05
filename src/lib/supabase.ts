@@ -66,10 +66,7 @@ const testSupabaseConnection = async () => {
     console.error('3. CORS configuration problems');
     console.error('4. Supabase project is paused/inactive');
   }
-};
-
-// Run connection test
-testSupabaseConnection();
+}
 
 export type Profile = {
   id: string;
