@@ -63,11 +63,30 @@ export function useAuth() {
   };
 
   const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    return { data, error };
+    try {
+      console.log('Attempting sign up for:', email);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('Supabase sign up error:', error);
+        return { data, error };
+      }
+      
+      console.log('Sign up successful:', data);
+      return { data, error };
+    } catch (networkError) {
+      console.error('Network error during sign up:', networkError);
+      return { 
+        data: null, 
+        error: { 
+          message: 'Network error: Please check your internet connection and Supabase configuration',
+          details: networkError
+        } 
+      };
+    }
   };
 
   const signOut = async () => {

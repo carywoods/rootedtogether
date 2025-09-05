@@ -26,10 +26,14 @@ export function AuthForm({ mode, onModeChange }: AuthFormProps) {
         if (error) throw error;
       } else {
         const { error } = await signUp(email, password);
-        if (error) throw error;
+        if (error) {
+          console.error('Sign up error details:', error);
+          throw error;
+        }
       }
     } catch (error: any) {
-      setError(error.message);
+      console.error('Auth form error:', error);
+      setError(error.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
