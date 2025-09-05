@@ -3,13 +3,36 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log('Supabase Environment Check:', {
+  url: supabaseUrl ? 'Set' : 'Missing',
+  key: supabaseAnonKey ? 'Set' : 'Missing',
+  urlValue: supabaseUrl,
+});
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase configuration. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
-  );
+  console.error('Missing Supabase configuration!');
+  console.error('Required environment variables:');
+  console.error('- VITE_SUPABASE_URL:', supabaseUrl || 'MISSING');
+  console.error('- VITE_SUPABASE_ANON_KEY:', supabaseAnonKey || 'MISSING');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase: SupabaseClient = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key'
+);
+
+// Test the connection
+supabase.auth.getSession().then(({ data, error }) => {
+  if (error && (supabaseUrl && supabaseAnonKey)) {
+    console.error('Supabase connection error:', error);
+  } else if (supabaseUrl && supabaseAnonKey) {
+    console.log('Supabase connected successfully');
+  }
+}).catch(err => {
+  if (supabaseUrl && supabaseAnonKey) {
+    console.error('Supabase connection failed:', err);
+  }
+});
 
 export type Profile = {
   id: string;
