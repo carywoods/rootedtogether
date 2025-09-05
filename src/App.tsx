@@ -14,8 +14,8 @@ function AppContent() {
 
   useEffect(() => {
     // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
   }, []);
 
